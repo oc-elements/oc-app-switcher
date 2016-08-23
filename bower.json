@@ -5,7 +5,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "paper-dialog": "PolymerElements/paper-dialog#^1.1.0",
-    "oc-serviceManagement-api": "git://github.com/oc-elements/oc-serviceManagement-api#1.x"
+    "oc-serviceManagement-api": "git://github.com/oc-elements/oc-serviceManagement-api#1.x",
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

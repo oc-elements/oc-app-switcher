@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../oc-serviceManagement-api/oc-serviceManagement-api.html">
+<link rel="import" href="../neon-animation/neon-animation.html">
 
 <!--
 `oc-app-switcher`
@@ -15,8 +16,40 @@ Element to switch between apps on the Ordercloud platform
       :host {
         display: block;
       }
+
+      paper-dialog {
+        transform: translateX(-50%);
+        padding: 10px;
+      }
+
+      paper-button {
+        display: block;
+        padding: 10px 5px;
+      }
+
+      strong {
+        text-align: center;
+      }
+
     </style>
-    <h2>Hello [[prop1]]</h2>
+    <div class="switcher-container" hidden$="[[_hidden]]">
+      <paper-icon-button icon="apps" raised on-tap="_toggleSwitcher" ></paper-icon-button>
+      <paper-dialog
+              id="animated"
+              entry-animation="scale-up-animation"
+              exit-animation="fade-out-animation"
+              no-overlap horizontal-align="left"
+              vertical-align="top">
+        <div>
+          <strong>Switch to app:</strong>
+        </div>
+        <template is="dom-repeat" items="[[_apps]]">
+          <paper-button disabled$="[[_isDisabled(item.name)]]" raised data-app-name$="[[item.name]]" on-tap="_selectApp"><iron-icon icon="[[item.icon]]"></iron-icon>[[item.name]] App</paper-button>
+        </template>
+
+      </paper-dialog>
+    </div>
+
   </template>
 
   <script>
@@ -25,11 +58,47 @@ Element to switch between apps on the Ordercloud platform
       is: 'oc-app-switcher',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 'oc-app-switcher',
-        },
+        _hidden: Boolean,
+        _apps : {
+          type: Array,
+          value: function(){
+            return [{
+              name: "orders",
+              icon: "check"
+            },
+              {
+                name: "users",
+                icon: "menu"
+              }];
+          }
+        }
       },
+
+      _toggleSwitcher : function(e){
+        this.$.animated.positionTarget = e.currentTarget;
+        this.$.animated.open();
+      },
+
+      _isDisabled : function(itemName){
+        return ("orders.ordercloud.com".split(".")[0].indexOf(itemName) > -1)
+      },
+
+      _selectApp : function(e){
+        var appName = Polymer.dom(e).localTarget.getAttribute('data-app-name'),
+                protocol = window.location.protocol+"//",
+                hostBase = "orders.ordercloud.com".split("."),
+                subDomain = hostBase.shift();
+
+        hostBase = hostBase.join(".");
+
+        if(subDomain.indexOf("-") > -1){
+          subDomain = subDomain.slice(subDomain.indexOf("-"), subDomain.length)
+        } else {
+          subDomain = null;
+        }
+
+        window.location = (subDomain) ? protocol+appName+subDomain+'.'+hostBase : protocol+appName+'.'+hostBase;
+      }
 
     });
   </script>
