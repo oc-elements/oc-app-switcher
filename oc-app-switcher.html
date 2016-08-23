@@ -80,24 +80,21 @@ Element to switch between apps on the Ordercloud platform
       },
 
       _isDisabled : function(itemName){
-        return ("orders.ordercloud.com".split(".")[0].indexOf(itemName) > -1)
+        return (window.location.host.split(".")[0].indexOf(itemName) > -1)
       },
 
       _selectApp : function(e){
         var appName = Polymer.dom(e).localTarget.getAttribute('data-app-name'),
-                protocol = window.location.protocol+"//",
-                hostBase = "orders.ordercloud.com".split("."),
+                location = window.location,
+                protocol = location.protocol+"//",
+                hostBase = location.host.split("."),
                 subDomain = hostBase.shift();
 
         hostBase = hostBase.join(".");
 
-        if(subDomain.indexOf("-") > -1){
-          subDomain = subDomain.slice(subDomain.indexOf("-"), subDomain.length)
-        } else {
-          subDomain = null;
-        }
+        subDomain = (subDomain.indexOf("-") > -1) ? subDomain.slice(subDomain.indexOf("-"), subDomain.length) : null;
 
-        window.location = (subDomain) ? protocol+appName+subDomain+'.'+hostBase : protocol+appName+'.'+hostBase;
+        location = (subDomain) ? protocol + appName + subDomain +'.'+ hostBase : protocol + appName +'.'+ hostBase;
       }
 
     });
