@@ -7,96 +7,122 @@
 `oc-app-switcher`
 Element to switch between apps on the Ordercloud platform
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="oc-app-switcher">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
 
-      paper-dialog {
-        transform: translateX(-50%);
-        padding: 10px;
-      }
+            paper-dialog {
+                transform: translateX(-50%);
+                padding: 10px 10px 20px;
+            }
 
-      paper-button {
-        display: block;
-        padding: 10px 5px;
-      }
+            paper-button {
+                display: block;
+                padding: 10px 5px;
+            }
 
-      strong {
-        text-align: center;
-      }
+            paper-button:hover {
+                background-color: #4285f4;
+                color: #fff;
+            }
 
-    </style>
-    <div class="switcher-container" hidden$="[[_hidden]]">
-      <paper-icon-button icon="apps" raised on-tap="_toggleSwitcher" ></paper-icon-button>
-      <paper-dialog
-              id="animated"
-              entry-animation="scale-up-animation"
-              exit-animation="fade-out-animation"
-              no-overlap horizontal-align="left"
-              vertical-align="top">
-        <div>
-          <strong>Switch to app:</strong>
+            iron-icon {
+                margin-right: 10px;
+            }
+
+            strong {
+                text-align: center;
+            }
+
+        </style>
+        <div class="switcher-container" hidden$="[[_hidden]]">
+            <paper-icon-button icon="apps" raised on-tap="_toggleSwitcher" ></paper-icon-button>
+            <paper-dialog
+                    id="animated"
+                    entry-animation="scale-up-animation"
+                    exit-animation="fade-out-animation"
+                    no-overlap horizontal-align="left"
+                    vertical-align="top">
+                <div>
+                    <strong>Switch to app:</strong>
+                </div>
+                <template is="dom-repeat" items="[[_apps]]">
+                    <paper-button disabled$="[[_isDisabled(item.name)]]" raised data-app-name$="[[item.name]]" on-tap="_selectApp"><iron-icon icon="[[item.icon]]"></iron-icon>[[item.name]] App</paper-button>
+                </template>
+
+            </paper-dialog>
         </div>
-        <template is="dom-repeat" items="[[_apps]]">
-          <paper-button disabled$="[[_isDisabled(item.name)]]" raised data-app-name$="[[item.name]]" on-tap="_selectApp"><iron-icon icon="[[item.icon]]"></iron-icon>[[item.name]] App</paper-button>
-        </template>
 
-      </paper-dialog>
-    </div>
+    </template>
 
-  </template>
+    <script>
+        Polymer({
 
-  <script>
-    Polymer({
+            is: 'oc-app-switcher',
 
-      is: 'oc-app-switcher',
-
-      properties: {
-        _hidden: Boolean,
-        _apps : {
-          type: Array,
-          value: function(){
-            return [{
-              name: "orders",
-              icon: "check"
+            properties: {
+                organisationId : Number,
+                _hidden: Boolean,
+                _apps : {
+                    type: Array,
+                    value: function(){
+                        return [{
+                            name: "orders",
+                            icon: "shopping-basket"
+                        },
+                            {
+                                name: "organisations",
+                                icon: "work"
+                            },
+                            {
+                                name: "products",
+                                icon: "view-list"
+                            },
+                            {
+                                name: "library",
+                                icon: "toc"
+                            },
+                            {
+                                name: "users",
+                                icon: "supervisor-account"
+                            }];
+                    }
+                }
             },
-              {
-                name: "users",
-                icon: "menu"
-              }];
-          }
-        }
-      },
 
-      _toggleSwitcher : function(e){
-        this.$.animated.positionTarget = e.currentTarget;
-        this.$.animated.open();
-      },
+            _toggleSwitcher : function(e){
+                this.$.animated.positionTarget = e.currentTarget;
+                this.$.animated.open();
+            },
 
-      _isDisabled : function(itemName){
-        return (window.location.host.split(".")[0].indexOf(itemName) > -1)
-      },
+            _isDisabled : function(itemName){
+                return (window.location.host.split(".")[0].indexOf(itemName) > -1)
+            },
 
-      _selectApp : function(e){
-        var appName = Polymer.dom(e).localTarget.getAttribute('data-app-name'),
-                location = window.location,
-                protocol = location.protocol+"//",
-                hostBase = location.host.split("."),
-                subDomain = hostBase.shift();
+            _selectApp : function(e){
+                var appName = Polymer.dom(e).localTarget.getAttribute('data-app-name'),
+                        protocol = window.location.protocol+"//",
+                        hostBase = window.location.host.split("."),
+                        subDomain = hostBase.shift();
 
-        hostBase = hostBase.join(".");
+                hostBase = hostBase.join(".");
 
-        subDomain = (subDomain.indexOf("-") > -1) ? subDomain.slice(subDomain.indexOf("-"), subDomain.length) : null;
+                if(subDomain.indexOf("-") > -1){
+                    subDomain = subDomain.slice(subDomain.indexOf("-"), subDomain.length)
+                } else {
+                    subDomain = null;
+                }
+//todo: add passing of org to new app
+//        window.location = (subDomain) ? protocol+appName+subDomain+'.'+hostBase + '?orgId='+this.organisationId : protocol+appName+'.'+hostBase+ '?orgId='+this.organisationId;
+                window.location = (subDomain) ? protocol+appName+subDomain+'.'+hostBase : protocol+appName+'.'+hostBase;
+            }
 
-        location = (subDomain) ? protocol + appName + subDomain +'.'+ hostBase : protocol + appName +'.'+ hostBase;
-      }
-
-    });
-  </script>
+        });
+    </script>
 </dom-module>
