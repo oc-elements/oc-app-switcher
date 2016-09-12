@@ -18,7 +18,8 @@ Element to switch between apps on the Ordercloud platform
             }
 
             paper-dialog {
-                transform: translateX(-50%);
+                right: -30px !important;
+                left: inherit !important;
                 padding: 10px 10px 20px;
             }
 
@@ -47,7 +48,8 @@ Element to switch between apps on the Ordercloud platform
                     id="animated"
                     entry-animation="scale-up-animation"
                     exit-animation="fade-out-animation"
-                    no-overlap horizontal-align="left"
+                    no-overlap
+
                     vertical-align="top">
                 <div>
                     <strong>Switch to app:</strong>
